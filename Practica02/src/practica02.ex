@@ -44,6 +44,10 @@ defmodule Grafica do
     {:ok, estado}
   end
 
+  # Función que hace la elección de lider, recibe un estado y ve 3 casos, uno en donde el id del nodo que tenemos es menor
+  # que el id del lider, otro donde el id del lider es menor, por lo tanto el lider es el mismo que ya era, y el ultimo
+  # caso donde el nodo no quiere ser lider pero da el mensaje de quien es el lider.
+
   def procesa_mensaje({:eleccion, lider_id}, estado) do
     %{:id => id, :lider => lider, :lider_id => lider_id_viejo, :soyLider => false} = estado
       cond do
@@ -113,9 +117,11 @@ send(x, {:vecinos, [t, v, w, y]})
 send(y, {:vecinos, [u, x, z]})
 send(z, {:vecinos, [y]})
 
-send(q, {:iniciar})
+send(x,{:inicia})
+
 # Iniciar la propagación desde el proceso raíz
 send(s, {:inicia})
+
 
 # Pausa para permitir que los mensajes se propaguen
 :timer.sleep(1000)
@@ -123,12 +129,7 @@ send(s, {:inicia})
 IO.puts("----------------------------------------------")
 IO.puts("Verificando conexidad de la grafica")
 IO.puts("----------------------------------------------")
-:timer.sleep(1000)
-send(q, {:ya})
-:timer.sleep(1000)
-send(r, {:ya})
-:timer.sleep(1000)
-send(s, {:ya})
+
 :timer.sleep(1000)
 send(t, {:ya})
 :timer.sleep(1000)
@@ -143,3 +144,9 @@ send(x, {:ya})
 send(y, {:ya})
 :timer.sleep(1000)
 send(z, {:ya})
+:timer.sleep(1000)
+send(q, {:ya})
+:timer.sleep(1000)
+send(r, {:ya})
+:timer.sleep(1000)
+send(s, {:ya})
