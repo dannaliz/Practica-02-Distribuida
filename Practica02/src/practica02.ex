@@ -44,6 +44,22 @@ defmodule Grafica do
     {:ok, estado}
   end
 
+  def procesa_mensaje({:eleccion, lider_id}, estado) do
+    %{:id => id, :lider => lider, :lider_id => lider_id_viejo, :soyLider => false} = estado
+      cond do
+        id < lider_id and lider ->
+          IO.puts("Soy el nodo #{id} y me proclamo como lider.")
+          Enum.each(Map.get(estado, :vecinos), fn vecino -> send(vecino, {:eleccion, id}) end)
+          estado=Map.put(estado,:lider_id, id)
+        lider_id_viejo < lider_id ->
+          IO.puts("Soy nodo #{id} y acepto al nodo #{lider_id} como lider.")
+          Enum.each(Map.get(estado, :vecinos), fn vecino -> send(vecino, {:eleccion, lider_id_viejo}) end)
+        :soyLider == true ->
+          IO.puts("Soy el nodo #{id} y no quiero ser lider, el lider es #{lider_id}.")
+      end
+    {:ok, estado}
+  end
+
   def conexion(estado, n_id \\ nil) do
     %{:id => id, :vecinos => vecinos, :visitado => visitado, :raiz => raiz} = estado
     if raiz and not visitado do
@@ -60,6 +76,7 @@ defmodule Grafica do
       end
     end
   end
+
 end
 
 q = spawn(Grafica, :inicia, [])
@@ -96,6 +113,7 @@ send(x, {:vecinos, [t, v, w, y]})
 send(y, {:vecinos, [u, x, z]})
 send(z, {:vecinos, [y]})
 
+send(q, {:iniciar})
 # Iniciar la propagación desde el proceso raíz
 send(s, {:inicia})
 
